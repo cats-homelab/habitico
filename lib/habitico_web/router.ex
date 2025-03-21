@@ -1,12 +1,25 @@
 defmodule HabiticoWeb.Router do
   use HabiticoWeb, :router
+  import HabiticoWeb.UserAuth
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_auth do
+    plug :accepts, ["json"]
+    plug :fetch_api_user
+  end
+
+  scope "/api", HabiticoWeb do
+    pipe_through :api_auth
+    get "/users/profile", UserController, :profile, as: :profile
+  end
+
   scope "/api", HabiticoWeb do
     pipe_through :api
+    post "/login", UserController, :login, as: :login
+    post "/register", UserController, :register, as: :register
   end
 
   # Enable LiveDashboard in development
